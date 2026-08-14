@@ -135,7 +135,7 @@
   <div class="saldo">
     <span class="rotulo">saldo do mês:</span>
     <span class="valor mono" id="saldoValor">R$ 0,00</span>
-    <button class="btn-olho" onclick="alternarOculto()" id="btnOlho" aria-label="Ocultar valores"></button>
+    <button class="btn-olho" onclick="alternarOculto()" id="btnOlho" aria-label="Ocultar valores"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg></button>
   </div>
   <div class="previsto" id="previstoLinha"></div>
 
@@ -486,18 +486,19 @@ function editar(id){
   const t = dados.transacoes.find(x=>x.id===id);
   if(!t) return;
   editandoId=id;
-  fFreq="unica";
   document.getElementById("valor").value=t.valor.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
   document.getElementById("descricao").value=t.descricao||"";
   document.getElementById("dataInput").value=t.data;
   document.getElementById("erroMsg").style.display="none";
   document.getElementById("linhaNova").classList.remove("aberta");
-  document.getElementById("blocoFreq").style.display="none"; // recorrência não muda na edição
-  document.getElementById("blocoStatus").style.display="grid";
+  // itens que já pertencem a uma recorrência não podem virar outra
+  document.getElementById("blocoFreq").style.display = t.recId ? "none" : "block";
   document.getElementById("btnSalvar").textContent="Salvar alterações";
   setTipo(t.tipo);
   fCategoria=t.categoria; renderChips();
+  setFreq("unica");
   setStatus(t.status);
+  document.getElementById("blocoStatus").style.display="grid";
   document.getElementById("overlay").classList.add("aberto");
 }
 function fecharForm(){ document.getElementById("overlay").classList.remove("aberto"); }
@@ -559,7 +560,25 @@ function salvarLancamento(){
 
   if(editandoId){
     const t = dados.transacoes.find(x=>x.id===editandoId);
-    if(t){ t.tipo=fTipo; t.status=fStatus; t.valor=v; t.descricao=desc; t.categoria=fCategoria; t.data=data; }
+    if(t){
+      if(fFreq!=="unica" && !t.recId){
+        // transformar este lançamento em recorrente
+        const regra={id:Date.now(),tipo:fTipo,valor:v,descricao:desc,categoria:fCategoria,freq:fFreq,inicio:data};
+        if(fFreq==="semanal") regra.diaSemana=new Date(a,m-1,d).getDay();
+        else regra.diaMes=d;
+        dados.recorrencias.push(regra);
+        if(t.status==="efetivado"){
+          // mantém o lançamento pago como a 1ª ocorrência da recorrência
+          t.tipo=fTipo; t.valor=v; t.descricao=desc; t.categoria=fCategoria; t.data=data; t.recId=regra.id;
+          marcarExcecao(regra.id,data,"efetivado");
+        } else {
+          // planejado vira ocorrência automática da regra
+          dados.transacoes = dados.transacoes.filter(x=>x.id!==editandoId);
+        }
+      } else {
+        t.tipo=fTipo; t.status=fStatus; t.valor=v; t.descricao=desc; t.categoria=fCategoria; t.data=data;
+      }
+    }
     editandoId=null;
   } else if(fFreq==="unica"){
     dados.transacoes.unshift({id:Date.now(),tipo:fTipo,status:fStatus,valor:v,descricao:desc,categoria:fCategoria,data});
