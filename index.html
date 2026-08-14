@@ -21,7 +21,7 @@
   body{
     background:var(--bg); color:var(--text);
     font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    font-size:16px; min-height:100vh; padding-bottom:100px;
+    font-size:14px; min-height:100vh; padding-bottom:100px;
     -webkit-tap-highlight-color:transparent;
   }
   .mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-variant-numeric:tabular-nums}
@@ -30,60 +30,60 @@
 
   /* cabeçalho */
   .topo{display:flex;align-items:center;justify-content:space-between}
-  .nav-mes{font-size:26px;color:var(--muted);padding:4px 16px;border-radius:10px}
-  .mes-label{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-align:center}
+  .nav-mes{font-size:22px;color:var(--muted);padding:4px 14px;border-radius:10px}
+  .mes-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-align:center}
 
   /* saldo */
   .saldo{text-align:center;margin:14px 0 6px}
-  .saldo .rotulo{font-size:14px;color:var(--muted);margin-bottom:4px}
-  .saldo .valor{font-size:38px;font-weight:700}
-  .previsto{text-align:center;font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.5}
+  .saldo .rotulo{font-size:12px;color:var(--muted);margin-bottom:4px}
+  .saldo .valor{font-size:30px;font-weight:700}
+  .previsto{text-align:center;font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.5}
   .previsto b{color:var(--text)}
 
   /* cards resumo */
   .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-  .card{background:var(--card);border-radius:14px;padding:14px 16px}
-  .card .rotulo{font-size:13px;color:var(--muted)}
-  .card .num{font-size:21px;font-weight:700;margin-top:3px}
+  .card{background:var(--card);border-radius:14px;padding:11px 14px}
+  .card .rotulo{font-size:11px;color:var(--muted)}
+  .card .num{font-size:16px;font-weight:700;margin-top:2px}
 
-  .secao{font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+  .secao{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
   .bloco{background:var(--card);border-radius:14px;padding:16px;margin-bottom:20px}
 
   /* gráfico de rosca */
   .rosca-area{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:8px}
   .rosca-area svg{display:block}
-  .cat-linha{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:15px;width:100%}
-  .ponto{width:10px;height:10px;border-radius:5px;flex-shrink:0}
-  .cat-linha .pct{font-size:14px;color:var(--muted)}
-  .cat-linha .val{min-width:96px;text-align:right;font-size:15px;font-weight:600}
+  .cat-linha{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:13px;width:100%}
+  .ponto{width:8px;height:8px;border-radius:4px;flex-shrink:0}
+  .cat-linha .pct{font-size:11px;color:var(--muted)}
+  .cat-linha .val{min-width:82px;text-align:right;font-size:13px;font-weight:600}
 
   /* itens de lançamento */
-  .item{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:12px;padding:14px;margin-bottom:8px}
+  .item{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:12px;padding:10px 12px;margin-bottom:7px;cursor:pointer}
   .item.plano{background:var(--card-soft);border:1px dashed var(--line)}
-  .item .dia{font-size:13px;color:var(--muted);width:42px;flex-shrink:0}
+  .item .dia{font-size:11px;color:var(--muted);width:34px;flex-shrink:0}
   .item .dia.vencido{color:var(--coral);font-weight:700}
   .item .meio{flex:1;min-width:0}
-  .item .desc{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .item .cat{font-size:13px;color:var(--muted);margin-top:2px}
-  .item .vlr{font-size:17px;font-weight:700;flex-shrink:0}
-  .item .acao{font-size:17px;color:var(--muted);padding:6px 4px}
-  .badge-rec{font-size:12px;color:var(--amber)}
-  .btn-efetivar{background:var(--mint);color:var(--mint-dark);font-size:13px;font-weight:700;border-radius:16px;padding:8px 12px;flex-shrink:0}
-  .vazio{background:var(--card-soft);border-radius:14px;padding:24px;text-align:center;color:var(--muted);font-size:15px;margin-bottom:20px;line-height:1.6}
+  .item .desc{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item .cat{font-size:11px;color:var(--muted);margin-top:1px}
+  .item .vlr{font-size:13px;font-weight:700;flex-shrink:0}
+  .item .acao{font-size:14px;color:var(--muted);padding:6px 4px}
+  .badge-rec{font-size:10px;color:var(--amber)}
+  .btn-efetivar{background:var(--mint);color:var(--mint-dark);font-size:11px;font-weight:700;border-radius:14px;padding:6px 10px;flex-shrink:0}
+  .vazio{background:var(--card-soft);border-radius:14px;padding:20px;text-align:center;color:var(--muted);font-size:13px;margin-bottom:20px;line-height:1.6}
   .vazio b{color:var(--mint)}
 
   .cor-mint{color:var(--mint)} .cor-coral{color:var(--coral)} .cor-amber{color:var(--amber)}
 
   /* recorrências ativas */
-  .link-rec{font-size:14px;color:var(--muted);text-decoration:underline;padding:4px 0;margin-bottom:16px;display:inline-block}
-  .rec-regra{display:flex;align-items:center;gap:10px;background:var(--card-soft);border-radius:12px;padding:12px 14px;margin-bottom:8px;font-size:15px}
-  .rec-regra .freq{font-size:13px;color:var(--amber);margin-top:2px}
+  .link-rec{font-size:12px;color:var(--muted);text-decoration:underline;padding:4px 0;margin-bottom:16px;display:inline-block}
+  .rec-regra{display:flex;align-items:center;gap:8px;background:var(--card-soft);border-radius:12px;padding:10px 12px;margin-bottom:7px;font-size:13px}
+  .rec-regra .freq{font-size:11px;color:var(--amber);margin-top:2px}
 
   /* botão flutuante */
   .fab{
     position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
-    background:var(--mint);color:var(--mint-dark);font-size:17px;font-weight:700;
-    padding:15px 30px;border-radius:28px;box-shadow:0 4px 16px rgba(0,0,0,.4);z-index:5;
+    background:var(--mint);color:var(--mint-dark);font-size:15px;font-weight:700;
+    padding:13px 26px;border-radius:28px;box-shadow:0 4px 16px rgba(0,0,0,.4);z-index:5;
   }
 
   /* modal */
@@ -92,33 +92,33 @@
   .folha{background:var(--card);border-radius:20px 20px 0 0;padding:20px 16px 32px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto}
   .toggle2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
   .toggle3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:6px}
-  .toggle2 button,.toggle3 button{padding:13px 4px;border-radius:12px;font-size:15px;font-weight:600;background:var(--card-soft);color:var(--muted)}
+  .toggle2 button,.toggle3 button{padding:11px 4px;border-radius:12px;font-size:13px;font-weight:600;background:var(--card-soft);color:var(--muted)}
   .ativo-despesa{background:var(--coral)!important;color:var(--mint-dark)!important}
   .ativo-receita{background:var(--mint)!important;color:var(--mint-dark)!important}
   .ativo-neutro{background:var(--amber)!important;color:var(--mint-dark)!important}
-  label{font-size:13px;color:var(--muted);display:block}
-  .dica{font-size:13px;color:var(--amber);margin:-8px 0 14px;min-height:0}
+  label{font-size:12px;color:var(--muted);display:block}
+  .dica{font-size:12px;color:var(--amber);margin:-8px 0 14px;min-height:0}
   input,select{
     width:100%;background:var(--card-soft);border:1px solid var(--line);border-radius:12px;
     color:var(--text);font-size:16px;padding:13px 14px;margin:6px 0 14px;outline:none;font-family:inherit;
   }
-  input#valor{font-size:26px}
+  input#valor{font-size:22px}
   input:focus{border-color:var(--mint)}
   .chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 14px}
-  .chip{padding:9px 15px;font-size:15px;border-radius:20px;background:var(--card-soft);border:1px solid var(--line);font-weight:600}
+  .chip{padding:7px 12px;font-size:13px;border-radius:20px;background:var(--card-soft);border:1px solid var(--line);font-weight:600}
   .chip.sel{background:var(--mint);color:var(--mint-dark);border-color:var(--mint)}
   .chip.nova{background:transparent;color:var(--mint);border:1px dashed var(--mint)}
   .linha-nova{display:none;gap:8px;margin-bottom:14px}
   .linha-nova.aberta{display:flex}
   .linha-nova input{margin:0;flex:1}
   .linha-nova button{background:var(--mint);color:var(--mint-dark);border-radius:12px;padding:10px 16px;font-weight:600}
-  .erro{color:var(--coral);font-size:14px;margin-bottom:10px;display:none}
+  .erro{color:var(--coral);font-size:13px;margin-bottom:10px;display:none}
   .acoes{display:grid;grid-template-columns:1fr 2fr;gap:8px}
-  .acoes .cancelar{background:var(--card-soft);color:var(--muted);border-radius:12px;padding:15px 0;font-weight:600;font-size:15px}
-  .acoes .salvar{background:var(--mint);color:var(--mint-dark);border-radius:12px;padding:15px 0;font-size:16px;font-weight:700}
+  .acoes .cancelar{background:var(--card-soft);color:var(--muted);border-radius:12px;padding:13px 0;font-weight:600;font-size:14px}
+  .acoes .salvar{background:var(--mint);color:var(--mint-dark);border-radius:12px;padding:13px 0;font-size:15px;font-weight:700}
 
   .rodape{display:flex;justify-content:center;margin-top:8px}
-  .btn-csv{font-size:13px;color:var(--muted);text-decoration:underline;padding:8px}
+  .btn-csv{font-size:12px;color:var(--muted);text-decoration:underline;padding:8px}
 </style>
 </head>
 <body>
@@ -165,6 +165,7 @@
       <button onclick="setStatus('planejado')" id="btnPlanejado">Planejado (futuro)</button>
     </div>
 
+    <div id="blocoFreq">
     <label>Repetir</label>
     <div class="toggle3">
       <button onclick="setFreq('unica')" id="btnUnica">Não</button>
@@ -172,6 +173,7 @@
       <button onclick="setFreq('mensal')" id="btnMensal">Todo mês</button>
     </div>
     <div class="dica" id="dicaFreq"></div>
+    </div>
 
     <label for="valor">Valor (R$)</label>
     <input id="valor" inputmode="decimal" placeholder="0,00">
@@ -193,7 +195,7 @@
 
     <div class="acoes">
       <button class="cancelar" onclick="fecharForm()">Cancelar</button>
-      <button class="salvar" onclick="salvarLancamento()">Salvar lançamento</button>
+      <button class="salvar" id="btnSalvar" onclick="salvarLancamento()">Salvar lançamento</button>
     </div>
   </div>
 </div>
@@ -209,6 +211,7 @@ let dados = carregar();
 let mesAtual = (()=>{const d=new Date();return{ano:d.getFullYear(),mes:d.getMonth()}})();
 let fTipo="despesa", fStatus="efetivado", fCategoria="", fFreq="unica";
 let mostrarRegras=false;
+let editandoId=null;
 
 function carregar(){
   try{
@@ -304,15 +307,15 @@ function render(){
       const vencido = t.tipo==="despesa" && t.data < hoje;
       const ehRec = !!t.recId;
       const chave = ehRec ? `'${t.recId}','${t.data}'` : t.id;
-      return `<div class="item plano">
+      return `<div class="item plano" ${ehRec?"":`onclick="editar(${t.id})"`}>
         <div class="dia mono ${vencido?"vencido":""}">${d}/${m}</div>
         <div class="meio">
           <div class="desc">${esc(t.descricao||t.categoria)}${vencido?' <span class="cor-coral">· vencido</span>':""}</div>
           <div class="cat">${esc(t.categoria)}${ehRec?` <span class="badge-rec">↻ ${t.freq==="semanal"?"semanal":"mensal"}</span>`:""}</div>
         </div>
         <div class="vlr mono ${t.tipo==="receita"?"cor-mint":"cor-amber"}">${t.tipo==="receita"?"+":"−"}${fmt(t.valor)}</div>
-        <button class="btn-efetivar" onclick="${ehRec?`efetivarRec(${chave})`:`efetivar(${chave})`}">✓ ${t.tipo==="receita"?"Recebi":"Paguei"}</button>
-        <button class="acao" onclick="${ehRec?`pularRec(${chave})`:`remover(${chave})`}" aria-label="Excluir">✕</button>
+        <button class="btn-efetivar" onclick="event.stopPropagation();${ehRec?`efetivarRec(${chave})`:`efetivar(${chave})`}">✓ ${t.tipo==="receita"?"Recebi":"Paguei"}</button>
+        <button class="acao" onclick="event.stopPropagation();${ehRec?`pularRec(${chave})`:`remover(${chave})`}" aria-label="Excluir">✕</button>
       </div>`;
     }).join("");
   } else sp.innerHTML = "";
@@ -329,7 +332,7 @@ function render(){
             <div>${esc(r.descricao||r.categoria)}</div>
             <div class="freq">↻ ${quando} · ${esc(r.categoria)}</div>
           </div>
-          <div class="vlr mono ${r.tipo==="receita"?"cor-mint":"cor-coral"}" style="font-size:15px">${r.tipo==="receita"?"+":"−"}${fmt(r.valor)}</div>
+          <div class="vlr mono ${r.tipo==="receita"?"cor-mint":"cor-coral"}" style="font-size:13px">${r.tipo==="receita"?"+":"−"}${fmt(r.valor)}</div>
           <button class="acao" onclick="removerRegra(${r.id})" aria-label="Encerrar recorrência">✕</button>
         </div>`;
       }).join("");
@@ -377,11 +380,11 @@ function render(){
   const ordenados = [...efet].sort((a,b)=>a.data<b.data?1:-1);
   ll.innerHTML = ordenados.length ? ordenados.map(t=>{
     const [,m,d]=t.data.split("-");
-    return `<div class="item">
+    return `<div class="item" onclick="editar(${t.id})">
       <div class="dia mono">${d}/${m}</div>
       <div class="meio"><div class="desc">${esc(t.descricao||t.categoria)}</div><div class="cat">${esc(t.categoria)}${t.recId?' <span class="badge-rec">↻</span>':""}</div></div>
       <div class="vlr mono ${t.tipo==="receita"?"cor-mint":"cor-coral"}">${t.tipo==="receita"?"+":"−"}${fmt(t.valor)}</div>
-      <button class="acao" onclick="remover(${t.id})" aria-label="Excluir">✕</button>
+      <button class="acao" onclick="event.stopPropagation();remover(${t.id})" aria-label="Excluir">✕</button>
     </div>`;
   }).join("") : `<div class="vazio">Nenhum lançamento efetivado neste mês.<br>Toque em <b>+ Adicionar</b> para começar.</div>`;
 }
@@ -434,13 +437,34 @@ function exportarCSV(){
 
 // ─── Formulário ─────────────────────────────────────────────────────
 function abrirForm(){
+  editandoId=null;
   fCategoria=""; fStatus="efetivado"; fFreq="unica";
   document.getElementById("valor").value="";
   document.getElementById("descricao").value="";
   document.getElementById("dataInput").value=hojeISO();
   document.getElementById("erroMsg").style.display="none";
   document.getElementById("linhaNova").classList.remove("aberta");
+  document.getElementById("blocoFreq").style.display="block";
+  document.getElementById("btnSalvar").textContent="Salvar lançamento";
   setTipo(fTipo); setStatus(fStatus); setFreq(fFreq);
+  document.getElementById("overlay").classList.add("aberto");
+}
+function editar(id){
+  const t = dados.transacoes.find(x=>x.id===id);
+  if(!t) return;
+  editandoId=id;
+  fFreq="unica";
+  document.getElementById("valor").value=String(t.valor).replace(".",",");
+  document.getElementById("descricao").value=t.descricao||"";
+  document.getElementById("dataInput").value=t.data;
+  document.getElementById("erroMsg").style.display="none";
+  document.getElementById("linhaNova").classList.remove("aberta");
+  document.getElementById("blocoFreq").style.display="none"; // recorrência não muda na edição
+  document.getElementById("blocoStatus").style.display="grid";
+  document.getElementById("btnSalvar").textContent="Salvar alterações";
+  setTipo(t.tipo);
+  fCategoria=t.categoria; renderChips();
+  setStatus(t.status);
   document.getElementById("overlay").classList.add("aberto");
 }
 function fecharForm(){ document.getElementById("overlay").classList.remove("aberto"); }
@@ -500,7 +524,11 @@ function salvarLancamento(){
   const desc=document.getElementById("descricao").value.trim();
   const [a,m,d]=data.split("-").map(Number);
 
-  if(fFreq==="unica"){
+  if(editandoId){
+    const t = dados.transacoes.find(x=>x.id===editandoId);
+    if(t){ t.tipo=fTipo; t.status=fStatus; t.valor=v; t.descricao=desc; t.categoria=fCategoria; t.data=data; }
+    editandoId=null;
+  } else if(fFreq==="unica"){
     dados.transacoes.unshift({id:Date.now(),tipo:fTipo,status:fStatus,valor:v,descricao:desc,categoria:fCategoria,data});
   } else {
     const regra={id:Date.now(),tipo:fTipo,valor:v,descricao:desc,categoria:fCategoria,freq:fFreq,inicio:data};
