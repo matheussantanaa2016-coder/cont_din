@@ -61,15 +61,17 @@
   /* itens de lançamento */
   .item{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:12px;padding:10px 12px;margin-bottom:7px;cursor:pointer}
   .item.plano{background:var(--card-soft);border:1px dashed var(--line)}
-  .item .dia{font-size:11px;color:var(--muted);width:34px;flex-shrink:0}
+  .item .dia{font-size:10px;color:var(--muted);width:32px;flex-shrink:0}
   .item .dia.vencido{color:var(--coral);font-weight:700}
   .item .meio{flex:1;min-width:0}
-  .item .desc{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .item .cat{font-size:11px;color:var(--muted);margin-top:1px}
-  .item .vlr{font-size:13px;font-weight:700;flex-shrink:0}
-  .item .acao{font-size:14px;color:var(--muted);padding:6px 4px}
+  .item .desc{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .item .cat{font-size:10px;color:var(--muted);margin-top:1px}
+  .item .vlr{font-size:12px;font-weight:700;flex-shrink:0}
+  .item .acao{font-size:13px;color:var(--muted);padding:6px 4px}
   .badge-rec{font-size:10px;color:var(--amber)}
-  .btn-efetivar{background:var(--mint);color:var(--mint-dark);font-size:11px;font-weight:700;border-radius:14px;padding:6px 10px;flex-shrink:0}
+  .chk{width:20px;height:20px;border:1.5px solid var(--muted);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;padding:0;background:transparent}
+  .chk.on{background:var(--mint);border-color:var(--mint)}
+  .chk svg{display:block}
   .vazio{background:var(--card-soft);border-radius:14px;padding:20px;text-align:center;color:var(--muted);font-size:13px;margin-bottom:20px;line-height:1.6}
   .vazio b{color:var(--mint)}
 
@@ -133,7 +135,7 @@
   <div class="saldo">
     <span class="rotulo">saldo do mês:</span>
     <span class="valor mono" id="saldoValor">R$ 0,00</span>
-    <button class="btn-olho" onclick="alternarOculto()" id="btnOlho" aria-label="Ocultar valores">👁️</button>
+    <button class="btn-olho" onclick="alternarOculto()" id="btnOlho" aria-label="Ocultar valores"></button>
   </div>
   <div class="previsto" id="previstoLinha"></div>
 
@@ -233,12 +235,15 @@ function carregar(){
 function persistir(){ try{ localStorage.setItem("financas-v1", JSON.stringify(dados)); }catch(e){ alert("Não foi possível salvar os dados neste navegador."); } }
 
 // ─── Utilidades ─────────────────────────────────────────────────────
+const ICO_CHECK='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0F241B" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+const ICO_OLHO='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>';
+const ICO_OLHO_OFF='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
 let oculto = localStorage.getItem("financas-oculto")==="1";
 const fmt = v => oculto ? "R$ \u2022\u2022\u2022\u2022" : v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 function alternarOculto(){
   oculto=!oculto;
   localStorage.setItem("financas-oculto", oculto?"1":"0");
-  document.getElementById("btnOlho").textContent = oculto?"\uD83D\uDE48":"\uD83D\uDC41\uFE0F";
+  document.getElementById("btnOlho").innerHTML = oculto?ICO_OLHO_OFF:ICO_OLHO;
   render();
 }
 const hojeISO = ()=>{const d=new Date();return isoDe(d.getFullYear(),d.getMonth()+1,d.getDate())};
@@ -323,13 +328,13 @@ function render(){
       const ehRec = !!t.recId;
       const chave = ehRec ? `'${t.recId}','${t.data}'` : t.id;
       return `<div class="item plano" ${ehRec?"":`onclick="editar(${t.id})"`}>
+        <button class="chk" onclick="event.stopPropagation();${ehRec?`efetivarRec(${chave})`:`efetivar(${chave})`}" aria-label="Marcar como pago"></button>
         <div class="dia mono ${vencido?"vencido":""}">${d}/${m}</div>
         <div class="meio">
           <div class="desc">${esc(t.descricao||t.categoria)}${vencido?' <span class="cor-coral">· vencido</span>':""}</div>
           <div class="cat">${esc(t.categoria)}${ehRec?` <span class="badge-rec">↻ ${t.freq==="semanal"?"semanal":"mensal"}</span>`:""}</div>
         </div>
         <div class="vlr mono ${t.tipo==="receita"?"cor-mint":"cor-amber"}">${t.tipo==="receita"?"+":"−"}${fmt(t.valor)}</div>
-        <button class="btn-efetivar" onclick="event.stopPropagation();${ehRec?`efetivarRec(${chave})`:`efetivar(${chave})`}">✓ ${t.tipo==="receita"?"Recebi":"Paguei"}</button>
         <button class="acao" onclick="event.stopPropagation();${ehRec?`pularRec(${chave})`:`remover(${chave})`}" aria-label="Excluir">✕</button>
       </div>`;
     }).join("");
@@ -396,6 +401,7 @@ function render(){
   ll.innerHTML = ordenados.length ? ordenados.map(t=>{
     const [,m,d]=t.data.split("-");
     return `<div class="item" onclick="editar(${t.id})">
+      <button class="chk on" onclick="event.stopPropagation();desfazer(${t.id})" aria-label="Desmarcar pagamento">${ICO_CHECK}</button>
       <div class="dia mono">${d}/${m}</div>
       <div class="meio"><div class="desc">${esc(t.descricao||t.categoria)}</div><div class="cat">${esc(t.categoria)}${t.recId?' <span class="badge-rec">↻</span>':""}</div></div>
       <div class="vlr mono ${t.tipo==="receita"?"cor-mint":"cor-coral"}">${t.tipo==="receita"?"+":"−"}${fmt(t.valor)}</div>
@@ -430,6 +436,18 @@ function removerRegra(id){
   if(!confirm("Encerrar esta recorrência? Os lançamentos já efetivados serão mantidos.")) return;
   dados.recorrencias = dados.recorrencias.filter(r=>r.id!==id);
   delete dados.excecoes[id];
+  persistir(); render();
+}
+function desfazer(id){
+  const t = dados.transacoes.find(x=>x.id===id);
+  if(!t) return;
+  if(t.recId){
+    // veio de uma recorrência: remove o lançamento e a ocorrência volta a aparecer como planejada
+    if(dados.excecoes[t.recId]) delete dados.excecoes[t.recId][t.data];
+    dados.transacoes = dados.transacoes.filter(x=>x.id!==id);
+  } else {
+    t.status = "planejado";
+  }
   persistir(); render();
 }
 function remover(id){
