@@ -34,9 +34,10 @@
   .mes-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-align:center}
 
   /* saldo */
-  .saldo{text-align:center;margin:14px 0 6px}
+  .saldo{text-align:center;margin:10px 0 4px}
+  .btn-olho{font-size:15px;color:var(--muted);padding:2px 8px;vertical-align:middle}
   .saldo .rotulo{font-size:12px;color:var(--muted);margin-bottom:4px}
-  .saldo .valor{font-size:30px;font-weight:700}
+  .saldo .valor{font-size:17px;font-weight:700;display:inline-block}
   .previsto{text-align:center;font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.5}
   .previsto b{color:var(--text)}
 
@@ -130,8 +131,9 @@
   </div>
 
   <div class="saldo">
-    <div class="rotulo">saldo do mês</div>
-    <div class="valor mono" id="saldoValor">R$ 0,00</div>
+    <span class="rotulo">saldo do mês:</span>
+    <span class="valor mono" id="saldoValor">R$ 0,00</span>
+    <button class="btn-olho" onclick="alternarOculto()" id="btnOlho" aria-label="Ocultar valores">👁️</button>
   </div>
   <div class="previsto" id="previstoLinha"></div>
 
@@ -176,7 +178,7 @@
     </div>
 
     <label for="valor">Valor (R$)</label>
-    <input id="valor" inputmode="decimal" placeholder="0,00">
+    <input id="valor" inputmode="numeric" placeholder="0,00" oninput="mascaraValor(this)">
 
     <label for="descricao">Descrição (opcional)</label>
     <input id="descricao" placeholder="Ex.: aluguel, cartão, salário…">
@@ -231,10 +233,22 @@ function carregar(){
 function persistir(){ try{ localStorage.setItem("financas-v1", JSON.stringify(dados)); }catch(e){ alert("Não foi possível salvar os dados neste navegador."); } }
 
 // ─── Utilidades ─────────────────────────────────────────────────────
-const fmt = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+let oculto = localStorage.getItem("financas-oculto")==="1";
+const fmt = v => oculto ? "R$ \u2022\u2022\u2022\u2022" : v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+function alternarOculto(){
+  oculto=!oculto;
+  localStorage.setItem("financas-oculto", oculto?"1":"0");
+  document.getElementById("btnOlho").textContent = oculto?"\uD83D\uDE48":"\uD83D\uDC41\uFE0F";
+  render();
+}
 const hojeISO = ()=>{const d=new Date();return isoDe(d.getFullYear(),d.getMonth()+1,d.getDate())};
 const isoDe = (a,m,d)=>`${a}-${String(m).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
 const parseValor = s => { const n=parseFloat(String(s).replace(/\./g,"").replace(",",".")); return isNaN(n)?0:n; };
+function mascaraValor(el){
+  const dig = el.value.replace(/\D/g,"").slice(0,12);
+  if(!dig){ el.value=""; return; }
+  el.value = (parseInt(dig,10)/100).toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+}
 const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const diasNoMes = (a,m)=> new Date(a,m+1,0).getDate(); // m 0-indexado
 
@@ -251,7 +265,8 @@ function ocorrenciasNoMes(rec, ano, mes){ // mes 0-indexado
   } else if(rec.freq==="mensal"){
     const dia = Math.min(rec.diaMes, nDias);
     const iso = isoDe(ano,mes+1,dia);
-    if(iso>=rec.inicio) out.push(iso);
+    // inclui a partir do MÊS de início (mesmo que o dia já tenha passado nele)
+    if(iso.slice(0,7) >= rec.inicio.slice(0,7)) out.push(iso);
   }
   return out;
 }
@@ -401,7 +416,7 @@ function efetivar(id){
   if(t){ t.status="efetivado"; persistir(); render(); }
 }
 function efetivarRec(recId, iso){
-  const r = dados.recorrencias.find(x=>x.id===recId);
+  const r = dados.recorrencias.find(x=>String(x.id)===String(recId));
   if(!r) return;
   dados.transacoes.unshift({id:Date.now(),tipo:r.tipo,status:"efetivado",valor:r.valor,descricao:r.descricao,categoria:r.categoria,data:iso,recId});
   marcarExcecao(recId,iso,"efetivado");
@@ -454,7 +469,7 @@ function editar(id){
   if(!t) return;
   editandoId=id;
   fFreq="unica";
-  document.getElementById("valor").value=String(t.valor).replace(".",",");
+  document.getElementById("valor").value=t.valor.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
   document.getElementById("descricao").value=t.descricao||"";
   document.getElementById("dataInput").value=t.data;
   document.getElementById("erroMsg").style.display="none";
