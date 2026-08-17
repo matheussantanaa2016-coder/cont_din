@@ -169,6 +169,11 @@
       <button onclick="setStatus('planejado')" id="btnPlanejado">Planejado (futuro)</button>
     </div>
 
+    <div class="toggle2" id="blocoEscopo" style="display:none">
+      <button onclick="setEscopo('so')" id="btnEscopoSo">Só esta ocorrência</button>
+      <button onclick="setEscopo('todas')" id="btnEscopoTodas">Todas as futuras</button>
+    </div>
+
     <div id="blocoFreq">
     <label>Repetir</label>
     <div class="toggle3">
@@ -216,6 +221,9 @@ let mesAtual = (()=>{const d=new Date();return{ano:d.getFullYear(),mes:d.getMont
 let fTipo="despesa", fStatus="efetivado", fCategoria="", fFreq="unica";
 let mostrarRegras=false;
 let editandoId=null;
+let editandoRec=null;   // {recId, data} — ocorrência recorrente em edição
+let editandoRegra=null; // id da regra em edição
+let fEscopo="so";
 
 function carregar(){
   try{
@@ -327,7 +335,7 @@ function render(){
       const vencido = t.tipo==="despesa" && t.data < hoje;
       const ehRec = !!t.recId;
       const chave = ehRec ? `'${t.recId}','${t.data}'` : t.id;
-      return `<div class="item plano" ${ehRec?"":`onclick="editar(${t.id})"`}>
+      return `<div class="item plano" onclick="${ehRec?`editarRec(${chave})`:`editar(${t.id})`}">
         <button class="chk" onclick="event.stopPropagation();${ehRec?`efetivarRec(${chave})`:`efetivar(${chave})`}" aria-label="Marcar como pago"></button>
         <div class="dia mono ${vencido?"vencido":""}">${d}/${m}</div>
         <div class="meio">
@@ -347,13 +355,13 @@ function render(){
     if(mostrarRegras){
       html += dados.recorrencias.map(r=>{
         const quando = r.freq==="semanal" ? `toda ${DIAS_SEMANA[r.diaSemana]}` : `todo dia ${r.diaMes}`;
-        return `<div class="rec-regra">
+        return `<div class="rec-regra" onclick="editarRegra(${r.id})" style="cursor:pointer">
           <div class="meio" style="flex:1;min-width:0">
             <div>${esc(r.descricao||r.categoria)}</div>
             <div class="freq">↻ ${quando} · ${esc(r.categoria)}</div>
           </div>
           <div class="vlr mono ${r.tipo==="receita"?"cor-mint":"cor-coral"}" style="font-size:13px">${r.tipo==="receita"?"+":"−"}${fmt(r.valor)}</div>
-          <button class="acao" onclick="removerRegra(${r.id})" aria-label="Encerrar recorrência">✕</button>
+          <button class="acao" onclick="event.stopPropagation();removerRegra(${r.id})" aria-label="Encerrar recorrência">✕</button>
         </div>`;
       }).join("");
     }
@@ -470,7 +478,8 @@ function exportarCSV(){
 
 // ─── Formulário ─────────────────────────────────────────────────────
 function abrirForm(){
-  editandoId=null;
+  editandoId=null; editandoRec=null; editandoRegra=null;
+  document.getElementById("blocoEscopo").style.display="none";
   fCategoria=""; fStatus="efetivado"; fFreq="unica";
   document.getElementById("valor").value="";
   document.getElementById("descricao").value="";
@@ -482,10 +491,51 @@ function abrirForm(){
   setTipo(fTipo); setStatus(fStatus); setFreq(fFreq);
   document.getElementById("overlay").classList.add("aberto");
 }
+function setEscopo(e){
+  fEscopo=e;
+  document.getElementById("btnEscopoSo").className = e==="so"?"ativo-neutro":"";
+  document.getElementById("btnEscopoTodas").className = e==="todas"?"ativo-neutro":"";
+}
+function editarRec(recId, iso){
+  const r = dados.recorrencias.find(x=>String(x.id)===String(recId));
+  if(!r) return;
+  editandoRec={recId:String(recId), data:iso}; editandoId=null; editandoRegra=null;
+  document.getElementById("valor").value=r.valor.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById("descricao").value=r.descricao||"";
+  document.getElementById("dataInput").value=iso;
+  document.getElementById("erroMsg").style.display="none";
+  document.getElementById("linhaNova").classList.remove("aberta");
+  document.getElementById("blocoFreq").style.display="none";
+  document.getElementById("blocoStatus").style.display="none";
+  document.getElementById("blocoEscopo").style.display="grid";
+  document.getElementById("btnSalvar").textContent="Salvar alterações";
+  setTipo(r.tipo);
+  fCategoria=r.categoria; renderChips();
+  setEscopo("so");
+  document.getElementById("overlay").classList.add("aberto");
+}
+function editarRegra(id){
+  const r = dados.recorrencias.find(x=>x.id===id);
+  if(!r) return;
+  editandoRegra=id; editandoId=null; editandoRec=null;
+  document.getElementById("valor").value=r.valor.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
+  document.getElementById("descricao").value=r.descricao||"";
+  document.getElementById("dataInput").value=r.inicio;
+  document.getElementById("erroMsg").style.display="none";
+  document.getElementById("linhaNova").classList.remove("aberta");
+  document.getElementById("blocoFreq").style.display="block";
+  document.getElementById("blocoEscopo").style.display="none";
+  document.getElementById("btnSalvar").textContent="Salvar alterações";
+  setTipo(r.tipo);
+  fCategoria=r.categoria; renderChips();
+  setFreq(r.freq);
+  document.getElementById("overlay").classList.add("aberto");
+}
 function editar(id){
   const t = dados.transacoes.find(x=>x.id===id);
   if(!t) return;
-  editandoId=id;
+  editandoId=id; editandoRec=null; editandoRegra=null;
+  document.getElementById("blocoEscopo").style.display="none";
   document.getElementById("valor").value=t.valor.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2});
   document.getElementById("descricao").value=t.descricao||"";
   document.getElementById("dataInput").value=t.data;
@@ -558,7 +608,39 @@ function salvarLancamento(){
   const desc=document.getElementById("descricao").value.trim();
   const [a,m,d]=data.split("-").map(Number);
 
-  if(editandoId){
+  if(editandoRec){
+    const rec = editandoRec; editandoRec=null;
+    if(fEscopo==="so"){
+      // esta ocorrência vira um lançamento próprio; a regra pula esta data
+      marcarExcecao(rec.recId, rec.data, "removido");
+      dados.transacoes.unshift({id:Date.now(),tipo:fTipo,status:"planejado",valor:v,descricao:desc,categoria:fCategoria,data});
+    } else {
+      const r = dados.recorrencias.find(x=>String(x.id)===String(rec.recId));
+      if(r){
+        r.tipo=fTipo; r.valor=v; r.descricao=desc; r.categoria=fCategoria;
+        if(r.freq==="semanal") r.diaSemana=new Date(a,m-1,d).getDay();
+        else r.diaMes=d;
+        if(data < r.inicio) r.inicio=data;
+      }
+    }
+  } else if(editandoRegra){
+    const rid = editandoRegra; editandoRegra=null;
+    const r = dados.recorrencias.find(x=>x.id===rid);
+    if(r){
+      if(fFreq==="unica"){
+        // deixa de repetir: encerra a regra e vira um lançamento único planejado
+        dados.recorrencias = dados.recorrencias.filter(x=>x.id!==rid);
+        delete dados.excecoes[rid];
+        dados.transacoes.unshift({id:Date.now(),tipo:fTipo,status:"planejado",valor:v,descricao:desc,categoria:fCategoria,data});
+      } else {
+        r.tipo=fTipo; r.valor=v; r.descricao=desc; r.categoria=fCategoria; r.freq=fFreq;
+        delete r.diaSemana; delete r.diaMes;
+        if(fFreq==="semanal") r.diaSemana=new Date(a,m-1,d).getDay();
+        else r.diaMes=d;
+        if(data < r.inicio) r.inicio=data;
+      }
+    }
+  } else if(editandoId){
     const t = dados.transacoes.find(x=>x.id===editandoId);
     if(t){
       if(fFreq!=="unica" && !t.recId){
