@@ -169,7 +169,12 @@
   <div class="secao">Lançamentos</div>
   <div id="listaLancamentos"></div>
 
-  <div class="rodape"><button class="btn-csv" onclick="exportarCSV()">Exportar CSV</button></div>
+  <div class="rodape" style="gap:14px">
+    <button class="btn-csv" onclick="exportarCSV()">Exportar CSV</button>
+    <button class="btn-csv" onclick="salvarBackup()">Salvar backup</button>
+    <button class="btn-csv" onclick="document.getElementById('arqBackup').click()">Restaurar backup</button>
+    <input type="file" id="arqBackup" accept="application/json,.json" style="display:none" onchange="restaurarBackup(this)">
+  </div>
 </div>
 
 <button class="fab" onclick="abrirForm()">+ Adicionar</button>
@@ -312,6 +317,7 @@ function telaAuth(){
       '<div class="auth-titulo">Criar acesso</div>'+
       '<p class="auth-sub">Informe seu celular para proteger o aplicativo. O n\u00famero fica salvo apenas neste aparelho \u2014 nada \u00e9 enviado para a internet.</p>'+
       '<p class="auth-sub" style="color:var(--mint)">Seus lan\u00e7amentos j\u00e1 registrados continuam salvos e aparecem assim que voc\u00ea entrar.</p>'+
+      '<p class="auth-sub" style="font-size:11.5px">Os dados ficam neste aparelho. Ao trocar de celular, use Salvar backup aqui e Restaurar backup no aparelho novo.</p>'+
       '<label>Celular</label>'+
       '<input id="foneCad" inputmode="numeric" placeholder="(11) 91234-5678" oninput="maskFone(this)">'+
       '<button class="btn-auth" onclick="cadastrar()">Continuar</button>'+
@@ -379,7 +385,6 @@ function entrarFone(){
   if(a && d===a.fone) liberar(); else authErro("Celular n\u00e3o confere com o cadastrado.");
 }
 function liberar(){ const t=document.getElementById("telaAuth"); if(t) t.style.display="none"; }
-window.addEventListener("error", function(){ try{ liberar(); }catch(e){} });
 function redefinirAcesso(){
   if(!confirm("Redefinir o acesso? Voc\u00ea vai cadastrar outro celular. Seus lan\u00e7amentos N\u00c3O ser\u00e3o apagados.")) return;
   try{ localStorage.removeItem(AUTH_KEY); }catch(e){}
@@ -584,6 +589,39 @@ function desfazer(id){
 function remover(id){
   dados.transacoes = dados.transacoes.filter(x=>x.id!==id);
   persistir(); render();
+}
+function salvarBackup(){
+  const pacote = JSON.stringify({app:"controle-financeiro", versao:1, data:new Date().toISOString(), dados});
+  const blob = new Blob([pacote],{type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  const d = new Date();
+  a.download = `backup-financas-${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+function restaurarBackup(input){
+  const f = input.files && input.files[0];
+  if(!f) return;
+  const leitor = new FileReader();
+  leitor.onload = function(){
+    try{
+      const p = JSON.parse(leitor.result);
+      const d = p && p.dados ? p.dados : p;
+      if(!d || !Array.isArray(d.transacoes)) throw new Error("formato");
+      if(!confirm("Restaurar este backup? Os lançamentos atuais deste aparelho serão substituídos.")) return;
+      dados = {
+        transacoes:d.transacoes||[],
+        categorias:d.categorias||JSON.parse(JSON.stringify(CATS_PADRAO)),
+        recorrencias:d.recorrencias||[],
+        excecoes:d.excecoes||{}
+      };
+      persistir(); render();
+      alert("Backup restaurado com sucesso.");
+    }catch(e){ alert("Arquivo inválido. Selecione um backup gerado pelo próprio aplicativo."); }
+    input.value="";
+  };
+  leitor.readAsText(f);
 }
 function exportarCSV(){
   const linhas = [["data","tipo","status","categoria","descricao","valor","recorrente"]];
@@ -799,6 +837,7 @@ function salvarLancamento(){
 }
 
 render();
+telaAuth();
 
 // ─── PWA: funcionamento offline ─────────────────────────────────────
 if ("serviceWorker" in navigator) {
