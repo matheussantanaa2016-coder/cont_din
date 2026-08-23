@@ -1,5 +1,5 @@
 // Service Worker — permite abrir o app sem internet
-const CACHE = "financas-v10";
+const CACHE = "financas-v11";
 const ARQUIVOS = [
   "./",
   "./index.html",

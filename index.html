@@ -22,6 +22,7 @@
     background:var(--bg); color:var(--text);
     font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
     font-size:14px; min-height:100vh; padding-bottom:100px;
+    overscroll-behavior-y:contain;
     -webkit-tap-highlight-color:transparent;
   }
   .mono{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-variant-numeric:tabular-nums}
@@ -296,6 +297,28 @@ const diasNoMes = (a,m)=> new Date(a,m+1,0).getDate(); // m 0-indexado
 
 // ─── Acesso: bloqueio local com celular e biometria ─────────────────
 const AUTH_KEY="financas-auth";
+const SESSAO_KEY="financas-sessao";
+const SESSAO_MIN=30; // minutos de tolerância antes de pedir desbloqueio de novo
+function sessaoAbrir(){
+  const agora=Date.now();
+  try{ sessionStorage.setItem(SESSAO_KEY, String(agora)); }catch(e){}
+  try{ localStorage.setItem(SESSAO_KEY, String(agora)); }catch(e){}
+}
+function sessaoValida(){
+  try{
+    // mesma aba/sessão do app: recarregar não pede senha de novo
+    if(sessionStorage.getItem(SESSAO_KEY)) return true;
+  }catch(e){}
+  try{
+    const t=parseInt(localStorage.getItem(SESSAO_KEY)||"0",10);
+    if(t && (Date.now()-t) < SESSAO_MIN*60*1000) return true;
+  }catch(e){}
+  return false;
+}
+function sessaoEncerrar(){
+  try{ sessionStorage.removeItem(SESSAO_KEY); }catch(e){}
+  try{ localStorage.removeItem(SESSAO_KEY); }catch(e){}
+}
 function authLer(){ try{return JSON.parse(localStorage.getItem(AUTH_KEY)||"null")}catch(e){return null} }
 function authSalvar(a){ try{localStorage.setItem(AUTH_KEY, JSON.stringify(a))}catch(e){} }
 function b64(buf){ return btoa(String.fromCharCode.apply(null,new Uint8Array(buf))); }
@@ -311,6 +334,7 @@ function maskFone(el){
 function authErro(m){ const e=document.getElementById("authErro"); if(e) e.textContent=m||""; }
 function telaAuth(){
   const a=authLer();
+  if(a && sessaoValida()){ liberar(); return; }
   const box=document.getElementById("authBox");
   if(!a){
     box.innerHTML =
@@ -384,13 +408,13 @@ function entrarFone(){
   const d=(document.getElementById("foneLogin").value||"").replace(/\D/g,"");
   if(a && d===a.fone) liberar(); else authErro("Celular n\u00e3o confere com o cadastrado.");
 }
-function liberar(){ const t=document.getElementById("telaAuth"); if(t) t.style.display="none"; }
+function liberar(){ sessaoAbrir(); const t=document.getElementById("telaAuth"); if(t) t.style.display="none"; }
 function redefinirAcesso(){
   if(!confirm("Redefinir o acesso? Voc\u00ea vai cadastrar outro celular. Seus lan\u00e7amentos N\u00c3O ser\u00e3o apagados.")) return;
   try{ localStorage.removeItem(AUTH_KEY); }catch(e){}
   telaAuth();
 }
-function bloquear(){ location.reload(); }
+function bloquear(){ sessaoEncerrar(); location.reload(); }
 
 // ─── Recorrências: ocorrências do mês ───────────────────────────────
 function ocorrenciasNoMes(rec, ano, mes){ // mes 0-indexado
@@ -838,6 +862,17 @@ function salvarLancamento(){
 
 render();
 telaAuth();
+// mantém a sessão viva enquanto o app está em uso
+document.addEventListener("visibilitychange", function(){
+  if(document.visibilityState==="visible"){
+    const t=document.getElementById("telaAuth");
+    if(t && t.style.display==="none") sessaoAbrir();
+  }
+});
+setInterval(function(){
+  const t=document.getElementById("telaAuth");
+  if(t && t.style.display==="none") sessaoAbrir();
+}, 60000);
 
 // ─── PWA: funcionamento offline ─────────────────────────────────────
 if ("serviceWorker" in navigator) {
