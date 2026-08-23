@@ -311,6 +311,7 @@ function telaAuth(){
     box.innerHTML =
       '<div class="auth-titulo">Criar acesso</div>'+
       '<p class="auth-sub">Informe seu celular para proteger o aplicativo. O n\u00famero fica salvo apenas neste aparelho \u2014 nada \u00e9 enviado para a internet.</p>'+
+      '<p class="auth-sub" style="color:var(--mint)">Seus lan\u00e7amentos j\u00e1 registrados continuam salvos e aparecem assim que voc\u00ea entrar.</p>'+
       '<label>Celular</label>'+
       '<input id="foneCad" inputmode="numeric" placeholder="(11) 91234-5678" oninput="maskFone(this)">'+
       '<button class="btn-auth" onclick="cadastrar()">Continuar</button>'+
@@ -326,6 +327,7 @@ function telaAuth(){
       '<label>Celular</label>'+
       '<input id="foneLogin" inputmode="numeric" placeholder="(11) 91234-5678" oninput="maskFone(this)">'+
       '<button class="'+((a.bio&&bioSuportado)?'btn-auth-sec':'btn-auth')+'" onclick="entrarFone()">Entrar</button>'+
+      '<button class="btn-auth-sec" style="border:none;background:none;text-decoration:underline;font-size:13px" onclick="redefinirAcesso()">N\u00e3o consigo entrar</button>'+
       '<div class="auth-erro" id="authErro"></div>';
   }
 }
@@ -377,6 +379,12 @@ function entrarFone(){
   if(a && d===a.fone) liberar(); else authErro("Celular n\u00e3o confere com o cadastrado.");
 }
 function liberar(){ const t=document.getElementById("telaAuth"); if(t) t.style.display="none"; }
+window.addEventListener("error", function(){ try{ liberar(); }catch(e){} });
+function redefinirAcesso(){
+  if(!confirm("Redefinir o acesso? Voc\u00ea vai cadastrar outro celular. Seus lan\u00e7amentos N\u00c3O ser\u00e3o apagados.")) return;
+  try{ localStorage.removeItem(AUTH_KEY); }catch(e){}
+  telaAuth();
+}
 function bloquear(){ location.reload(); }
 
 // ─── Recorrências: ocorrências do mês ───────────────────────────────
